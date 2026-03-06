@@ -38,9 +38,21 @@ export const queries = {
 */
 
 // Placeholder exports to prevent import errors
-export const db = "TODO: Implement database connection"
+// TODO: Implement database connection
 
-export const queries = {
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema';
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not defined in .env');
+}
+
+const sql = neon(process.env.DATABASE_URL);
+
+export const db = drizzle(sql, { schema });
+
+/* export const queries = {
   projects: {
     getAll: () => {
       console.log("TODO: Task 4.1 - Implement project CRUD operations")
@@ -81,4 +93,4 @@ export const queries = {
       return null
     },
   },
-}
+} */
