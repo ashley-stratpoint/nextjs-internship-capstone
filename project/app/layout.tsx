@@ -1,17 +1,35 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, JetBrains_Mono} from "next/font/google"
 import "./globals.css"
 // TODO: Task 2.1 - Set up Clerk authentication service
 // import { ClerkProvider } from "@clerk/nextjs"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const inter = Inter({ subsets: ["latin"] })
+const fontSans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
 
 export const metadata: Metadata = {
-  title: "Project Management Tool",
-  description: "Team collaboration and project management platform",
-    generator: 'v0.dev'
+  title: { 
+    default: "Balangkas | Project Management Tool",
+    template: "%s | Balangkas",
+  },
+  description: "Balangkas is a project management tool designed to help teams organize, track, and manage their projects effectively.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Balangkas",
+    description: "Project Management Tool",
+    type: "website",
+  }
 }
 
 export default function RootLayout({
@@ -23,8 +41,8 @@ export default function RootLayout({
     // TODO: Task 2.1 - Wrap with ClerkProvider once Clerk is set up
     // <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}>
+        <ThemeProvider >{children}</ThemeProvider>
       </body>
     </html>
     // </ClerkProvider>
