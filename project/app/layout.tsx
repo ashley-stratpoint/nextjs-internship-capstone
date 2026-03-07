@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}>
+      <body suppressHydrationWarning className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}>
         <ThemeProvider >{children}</ThemeProvider>
       </body>
     </html>
