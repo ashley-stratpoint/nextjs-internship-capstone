@@ -2,7 +2,7 @@
 // import { authMiddleware } from "@clerk/nextjs"
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)']);
+const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)']);
 // NOTE: Next.js 16+ - The "middleware" file convention is deprecated.
 // When implementing authentication, consider using the new "proxy" pattern.
 // Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
