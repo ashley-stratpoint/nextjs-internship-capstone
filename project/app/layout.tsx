@@ -2,8 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono} from "next/font/google"
 import "./globals.css"
-// TODO: Task 2.1 - Set up Clerk authentication service
-// import { ClerkProvider } from "@clerk/nextjs"
+import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider"
 
 const fontSans = Inter({
@@ -38,13 +37,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    // TODO: Task 2.1 - Wrap with ClerkProvider once Clerk is set up
-    // <ClerkProvider>
+    <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
       <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}>
         <ThemeProvider >{children}</ThemeProvider>
       </body>
     </html>
-    // </ClerkProvider>
+    </ClerkProvider>
   )
 }
