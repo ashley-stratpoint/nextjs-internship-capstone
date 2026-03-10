@@ -65,7 +65,7 @@ export const users = pgTable('users', {
    id: uuid('id').defaultRandom().primaryKey(),
    clerkId: text('clerk_id').notNull().unique(),
    email: text('email').notNull(),
-   firstName: text('first_name'),
+   firstName: text('first_name').notNull(),
    lastName: text('last_name'),
    imageUrl: text('image_url'),
    role: roleEnum('role').notNull().default('user'),
@@ -88,7 +88,7 @@ export const projects = pgTable('projects', {
 
 export const lists = pgTable('lists', {
    id: uuid('id').defaultRandom().primaryKey(),
-   name: text('name').notNull(),
+   listName: text('list_name').notNull(),
    projectId: uuid('project_id').references(() => projects.id, { onDelete: "cascade" }).notNull(),
    position: integer('position').notNull().default(0),
    createdAt: timestamp('created_at').defaultNow(),
@@ -97,7 +97,7 @@ export const lists = pgTable('lists', {
 
 export const categories = pgTable('categories', {
    id: uuid('id').defaultRandom().primaryKey(),
-   name: text('name').notNull(),
+   catName: text('cat_name').notNull(),
    color: text('color').default('#7c3aed'),
    projectId: uuid('project_id').references(() => projects.id, { onDelete: "cascade" }),
    createdAt: timestamp('created_at').defaultNow(),
@@ -106,7 +106,7 @@ export const categories = pgTable('categories', {
 
 export const tasks = pgTable('tasks', {
    id: uuid('id').defaultRandom().primaryKey(),
-   title: text('title').notNull(),
+   taskTitle: text('task_title').notNull(),
    description: text('description'),
    listId: uuid('list_id').references(() => lists.id, { onDelete: "cascade" }),
    assigneeId: uuid('assignee_id').references(() => users.id, { onDelete: "set null" }),
