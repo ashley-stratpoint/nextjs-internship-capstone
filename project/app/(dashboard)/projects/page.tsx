@@ -1,3 +1,5 @@
+{/*
+
 import { Plus, Search, Filter } from "lucide-react"
 
 export default function ProjectsPage() {
@@ -12,10 +14,10 @@ export default function ProjectsPage() {
             <Plus size={20} className="mr-2" />
             New Project
           </button>
-        </div>
+        </div> */}
 
         {/* Implementation Tasks Banner */}
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        {/*<div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
           <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
             📋 Projects Page Implementation Tasks
           </h3>
@@ -25,10 +27,10 @@ export default function ProjectsPage() {
             <li>• Task 4.5: Design and implement project cards and layouts</li>
             <li>• Task 4.6: Add project and task search/filtering capabilities</li>
           </ul>
-        </div>
+        </div>*/}
 
         {/* Search and Filter Bar */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        {/*<div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-payne's_gray-500 dark:text-french_gray-400"
@@ -44,10 +46,10 @@ export default function ProjectsPage() {
             <Filter size={16} className="mr-2" />
             Filter
           </button>
-        </div>
+        </div>*/}
 
         {/* Projects Grid Placeholder */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
@@ -81,10 +83,10 @@ export default function ProjectsPage() {
               </div>
             </div>
           ))}
-        </div>
+        </div>*/}
 
         {/* Component Placeholders */}
-        <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+        {/*<div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">📁 Components to Implement</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
             <div>
@@ -107,4 +109,114 @@ export default function ProjectsPage() {
         </div>
       </div>
   )
+} 
+
+*/}
+
+
+import { Plus, Search, Filter } from "lucide-react";
+import { ProjectCard } from "@/components/project-card";
+
+const MOCK_PROJECTS = [
+  {
+    id: "1",
+    name: "Project 1",
+    description: "Description 1.",
+    progress: 75,
+    memberCount: 3,
+    dueDate: new Date("2026-03-25"),
+    status: "active" as const,
+  },
+  {
+    id: "2",
+    name: "Project 2",
+    description: "Description 2.",
+    progress: 45,
+    memberCount: 2,
+    dueDate: new Date("2026-04-10"),
+    status: "active" as const,
+  },
+  {
+    id: "3",
+    name: "Project 3",
+    description: "Description 3.",
+    progress: 100,
+    memberCount: 1,
+    dueDate: new Date("2026-03-01"),
+    status: "completed" as const,
+  },
+  {
+    id: "4",
+    name: "Project 4",
+    description: "Description 4.",
+    progress: 10,
+    memberCount: 4,
+    dueDate: new Date("2026-05-15"),
+    status: "on-hold" as const,
+  },
+];
+
+export default function ProjectsPage() {
+  return (
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Projects</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage and organize your team's architecture and task flows.
+          </p>
+        </div>
+        <button className="inline-flex items-center justify-center px-5 py-2.5 bg-primary text-primary-foreground rounded-[var(--radius)] hover:opacity-90 transition-opacity font-semibold shadow-sm">
+          <Plus size={20} className="mr-2" />
+          New Project
+        </button>
+      </div>
+
+      {/* Implementation Status Banner */}
+      <div className="bg-muted/50 border border-border rounded-[var(--radius)] p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-primary font-bold text-xs uppercase tracking-widest">Phase 4.0</span>
+          <h3 className="text-sm font-semibold">Active Tasks</h3>
+        </div>
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-xs text-muted-foreground">
+          <li>• Task 4.1: Implement project CRUD operations</li>
+          <li>• Task 4.5: Design and implement project cards</li>
+          <li className="text-primary font-medium">• Task 4.6: Add project search/filtering (In Progress)</li>
+        </ul>
+      </div>
+
+      {/* Search and Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={18}
+          />
+          <input
+            type="text"
+            placeholder="Search projects..."
+            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-[var(--radius)] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+          />
+        </div>
+        <button className="inline-flex items-center px-4 py-2 border border-input bg-background text-foreground rounded-[var(--radius)] hover:bg-accent transition-colors text-sm font-medium">
+          <Filter size={16} className="mr-2" />
+          Filter
+        </button>
+      </div>
+
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {MOCK_PROJECTS.map((project) => (
+          <ProjectCard 
+            key={project.id} 
+            project={project}
+            onEdit={(id) => console.log("Edit project:", id)}
+            onDelete={(id) => console.log("Delete project:", id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
+
