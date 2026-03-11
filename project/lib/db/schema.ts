@@ -49,7 +49,7 @@ export const comments = "TODO: Implement comments table schema"
 import { pgTable, text, timestamp, varchar, integer, uuid, primaryKey, uniqueIndex, index, pgEnum } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm/relations';
 
-export const roleEnum = pgEnum('role', ['user', 'project_manager', 'admin']);
+export const roleEnum = pgEnum('role', ['member', 'project_manager', 'admin']);
 export const taskStatusEnum = pgEnum('task_status', ['todo', 'in_progress', 'review', 'done', 'backlog']);
 export const priorityEnum = pgEnum("task_priority", ["low", "medium", "high", "urgent"]);
 
@@ -68,7 +68,7 @@ export const users = pgTable('users', {
    firstName: text('first_name').notNull(),
    lastName: text('last_name'),
    imageUrl: text('image_url'),
-   role: roleEnum('role').notNull().default('user'),
+   role: roleEnum('role').notNull().default('member'),
    orgId: uuid('org_id').references(() => organizations.id, { onDelete: "cascade" }).notNull(),
    createdAt: timestamp('created_at').defaultNow(),
    updatedAt: timestamp('updated_at').defaultNow(),
