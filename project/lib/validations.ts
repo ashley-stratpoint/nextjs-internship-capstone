@@ -62,22 +62,22 @@ export const userProfileSchema = z.object({
     .email('Invalid email address'),
   firstName: z.string()
     .min(1, 'First name is required')
-    .max(100, 'First name too long'),
+    .max(100, 'First name is too long (max 100 characters)'),
   lastName: z.string()
-    .max(100, 'Last name too long')
+    .max(100, 'Last name is too long (max 100 characters)')
     .optional(),
   imageUrl: z.string()
     .url('Invalid image URL')
     .optional(),
-  role: z.enum(['user', 'project_manager', 'admin'])
-    .default('user'),
+  role: z.enum(['member', 'project_manager', 'admin'])
+    .default('member'),
   orgId: uuidSchema,
 })
 
 
 export const projectSchema = z.object({
   projectName: z.string()
-    .min(1, 'Project name is too short (min 1 character)')
+    .min(1, 'Project name is required')
     .max(100, 'Project name is too long (max 100 characters)'),
   description: z.string()
     .optional()
@@ -91,8 +91,8 @@ export const projectSchema = z.object({
 
 export const listSchema = z.object({
   listName: z.string()
-    .min(1, 'List name required')
-    .max(50, 'List name too long'),
+    .min(1, 'List name is required')
+    .max(50, 'List name is too long (max 50 characters)'),
   position: z.number().int().nonnegative(),
 })
 
@@ -116,7 +116,7 @@ export const taskSchema = z.object({
 
 export const commentSchema = z.object({
   content: z.string()
-    .min(1, 'Comment cannot be empty'),
+    .min(1, 'Invalid comment'),
   taskId: z.string()
     .min(1, 'Task reference is required'),
   authorId: z.string()
