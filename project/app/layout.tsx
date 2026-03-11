@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono} from "next/font/google"
 import "./globals.css"
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider"
+import { dark } from "@clerk/themes"
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -37,10 +38,23 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{ 
+        variables: {
+          colorPrimary: '#a855f7',
+        } ,
+      }}
+    >
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}>
-        <ThemeProvider >{children}</ThemeProvider>
+        <ThemeProvider 
+          attribute="class"
+          defaultTheme="system" 
+          enableSystem 
+          disableTransitionOnChange
+        >
+            {children}
+        </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>

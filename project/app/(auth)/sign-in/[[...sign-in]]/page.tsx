@@ -12,7 +12,8 @@ export default function SignInPage() {
 
         {/* TODO: Task 2.3 - Replace with actual Clerk SignIn component */}
         <div className="flex justify-center">
-          <SignIn 
+          <SignIn
+            signUpFallbackRedirectUrl="/dashboard"
             appearance={{
               elements: {
                 formButtonPrimary: 

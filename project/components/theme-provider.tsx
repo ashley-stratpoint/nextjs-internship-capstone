@@ -7,6 +7,10 @@ type Theme = "dark" | "light"
 
 type ThemeProviderProps = {
   children: React.ReactNode
+  attribute?: string
+  defaultTheme?: string
+  enableSystem?: boolean
+  disableTransitionOnChange?: boolean
 }
 
 type ThemeProviderState = {
@@ -21,11 +25,10 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>("light")
+export function ThemeProvider({ children, defaultTheme = "light" }: ThemeProviderProps) {
+  const [theme, setTheme] = useState<Theme>(defaultTheme as Theme)
 
   useEffect(() => {
-    // Check for saved theme preference or default to light
     const savedTheme = localStorage.getItem("theme") as Theme
     if (savedTheme) {
       setTheme(savedTheme)
@@ -49,8 +52,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext)
-
   if (context === undefined) throw new Error("useTheme must be used within a ThemeProvider")
-
   return context
 }
