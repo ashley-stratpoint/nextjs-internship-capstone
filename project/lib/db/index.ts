@@ -41,19 +41,23 @@ export const queries = {
 // Placeholder exports to prevent import errors
 // (Done) TODO: Implement database connection
 
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { Pool, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import ws from 'ws';
 import { eq, and, asc, desc, exists } from 'drizzle-orm';
 import * as schema from './schema';
 import { organizations, users, projects, tasks, lists, comments } from './schema';
+
+if (typeof window === 'undefined') {
+  neonConfig.webSocketConstructor = ws;
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined in .env');
 }
 
-const sql = neon(process.env.DATABASE_URL);
-
-export const db = drizzle(sql, { schema });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export const db = drizzle(pool, { schema });
 
 export const queries = {
   organizations: {
@@ -93,27 +97,6 @@ export const queries = {
   },
 
   projects: {
-    getByProject: async (projectId: string) => {
-      try {
-        return await db.query.tasks.findMany({
-          where: (tasks, { exists, and, eq }) => 
-            exists(
-              db.select().from(lists).where(and(eq(lists.id, tasks.listId), eq(lists.projectId, projectId)))
-            ),
-          with: {
-            assignee: true,
-            list: true,
-            comments: true,
-            taskCategories: { with: { category: true } },
-          },
-          orderBy: [tasks.position],
-        });
-      } catch (error) {
-        console.error(`Error fetching tasks for project ${projectId}:`, error);
-        throw new Error('Failed to fetch tasks');
-      }
-    },
-
     getAll: async (orgId: string) => {
       try {
         const result = await db.query.projects.findMany({
@@ -212,30 +195,23 @@ export const queries = {
   tasks: {
     getByProject: async (projectId: string) => {
       try {
-        const result = await db.query.tasks.findMany({
-          where: eq(lists.projectId, projectId),
+        return await db.query.tasks.findMany({
+          where: (tasks, { exists, and, eq }) => 
+            exists(
+              db.select().from(lists).where(and(eq(lists.id, tasks.listId), eq(lists.projectId, projectId)))
+            ),
           with: {
             assignee: true,
             list: true,
-            taskCategories: {
-              with: {
-                category: true,
-              }
-            },
             comments: true,
+            taskCategories: { with: { category: true } },
           },
           orderBy: [tasks.position],
         });
-        
-        if(!result) {
-          throw new Error('No tasks found for this project.');
-        }
-
-          return result;
       } catch (error) {
         console.error(`Error fetching tasks for project ${projectId}:`, error);
         throw new Error('Failed to fetch tasks');
-      };
+      }
     },
 
     getByListId: async (listId: string) => {
