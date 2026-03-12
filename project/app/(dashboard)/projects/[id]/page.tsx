@@ -2,49 +2,51 @@ import { ArrowLeft, Settings, Users, Calendar, MoreHorizontal } from "lucide-rea
 import Link from "next/link"
 import { DashboardLayout } from "@/components/dashboard-layout"
 
-export default function ProjectPage({ params }: { params: { id: string } }) {
+export default async function ProjectPage({ params }: { params: Promise<{ id: string }>}) {
+  const { id } = await params;
+
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         {/* Project Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
             <Link
               href="/projects"
-              className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-[var(--radius)] transition-colors border border-transparent hover:border-border"
             >
               <ArrowLeft size={20} />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-outer_space-500 dark:text-platinum-500">Project #{params.id}</h1>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground text-glow-primary">Project #{id}</h1>
+              <p className="text-muted-foreground mt-1 text-sm">
                 Kanban board view for project management
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
+          <div className="flex items-center gap-2">
+            <button className="p-2 hover:bg-muted rounded-[var(--radius)] transition-colors text-muted-foreground hover:text-foreground">
               <Users size={20} />
             </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
+            <button className="p-2 hover:bg-muted rounded-[var(--radius)] transition-colors text-muted-foreground hover:text-foreground">
               <Calendar size={20} />
             </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
+            <button className="p-2 hover:bg-muted rounded-[var(--radius)] transition-colors text-muted-foreground hover:text-foreground">
               <Settings size={20} />
             </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
+            <button className="p-2 hover:bg-muted rounded-[var(--radius)] transition-colors text-muted-foreground hover:text-foreground">
               <MoreHorizontal size={20} />
             </button>
           </div>
         </div>
 
         {/* Implementation Tasks Banner */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+        <div className="bg-accent/50 border border-border rounded-[var(--radius)] p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             🎯 Kanban Board Implementation Tasks
           </h3>
-          <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-xs text-muted-foreground">
             <li>• Task 5.1: Design responsive Kanban board layout</li>
             <li>• Task 5.2: Implement drag-and-drop functionality with dnd-kit</li>
             <li>• Task 5.4: Implement optimistic UI updates for smooth interactions</li>
@@ -53,49 +55,49 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Kanban Board Placeholder */}
-        <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
-          <div className="flex space-x-6 overflow-x-auto pb-4">
-            {["To Do", "In Progress", "Review", "Done"].map((columnTitle, columnIndex) => (
+        <div className="rounded-[var(--radius)]">
+          <div className="flex space-x-6 overflow-x-auto pb-6 scrollbar-thin">
+            {["To Do", "In Progress", "Review", "Done"].map((columnTitle) => (
               <div key={columnTitle} className="flex-shrink-0 w-80">
-                <div className="bg-platinum-800 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
-                  <div className="p-4 border-b border-french_gray-300 dark:border-payne's_gray-400">
+                <div className="bg-muted/30 rounded-[var(--radius)] border border-border flex flex-col h-full min-h-[500px]">
+                  <div className="p-4 border-b border-border bg-card/50 rounded-t-[var(--radius)]">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
+                      <h3 className="font-semibold text-foreground flex items-center gap-2">
                         {columnTitle}
-                        <span className="ml-2 px-2 py-1 text-xs bg-french_gray-300 dark:bg-payne's_gray-400 rounded-full">
+                        <span className="px-2 py-0.5 text-[10px] bg-secondary text-secondary-foreground rounded-full">
                           {Math.floor(Math.random() * 5) + 1}
                         </span>
                       </h3>
-                      <button className="p-1 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded">
+                      <button className="p-1 hover:bg-background rounded text-muted-foreground transition-colors">
                         <MoreHorizontal size={16} />
                       </button>
                     </div>
                   </div>
 
-                  <div className="p-4 space-y-3 min-h-[400px]">
+                  <div className="p-3 space-y-3">
                     {[1, 2, 3].map((taskIndex) => (
                       <div
                         key={taskIndex}
-                        className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
+                        className="p-4 bg-card text-card-foreground rounded-[var(--radius)] border border-border shadow-xs hover:shadow-md hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing"
                       >
-                        <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
+                        <h4 className="font-medium text-sm mb-1 line-clamp-1">
                           Sample Task {taskIndex}
                         </h4>
-                        <p className="text-xs text-payne's_gray-500 dark:text-french_gray-400 mb-3">
+                        <p className="text-xs text-muted-foreground mb-4 line-clamp-2">
                           This is a placeholder task description
                         </p>
                         <div className="flex items-center justify-between">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue_munsell-100 text-blue_munsell-700 dark:bg-blue_munsell-900 dark:text-blue_munsell-300">
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-accent text-accent-foreground border border-border">
                             Medium
                           </span>
-                          <div className="w-6 h-6 bg-blue_munsell-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                            U
+                          <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm">
+                            {id.slice(0, 1).toUpperCase()}
                           </div>
                         </div>
                       </div>
                     ))}
 
-                    <button className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
+                    <button className="w-full p-3 border-2 border-dashed border-border rounded-[var(--radius)] text-muted-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all text-xs font-medium">
                       + Add task
                     </button>
                   </div>
@@ -132,6 +134,5 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

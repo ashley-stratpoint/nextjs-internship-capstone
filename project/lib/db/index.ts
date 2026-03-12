@@ -44,7 +44,7 @@ export const queries = {
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from 'ws';
-import { eq, and, asc, desc, exists } from 'drizzle-orm';
+import { sql, eq, and, asc, desc, exists } from 'drizzle-orm';
 import * as schema from './schema';
 import { organizations, users, projects, tasks, lists, comments } from './schema';
 
@@ -97,7 +97,7 @@ export const queries = {
   },
 
   projects: {
-    getAll: async (orgId: string) => {
+    /*getAll: async (orgId: string) => {
       try {
         const result = await db.query.projects.findMany({
           where: eq(projects.ownerId, orgId),
@@ -111,6 +111,38 @@ export const queries = {
       } catch (error) {
         console.error('Error fetching projects:', error);
         throw new Error('Failed to fetch projects');
+      }
+    },*/
+
+    getAll: async (clerkOrgId: string) => {
+      try {
+        const result = await db.select({
+          id: projects.id,
+          projectName: projects.projectName,
+          description: projects.description,
+          dueDate: projects.dueDate,
+          status: projects.status,
+          progress: sql<number>`
+            CASE 
+              WHEN COUNT(${tasks.id}) = 0 THEN 0 
+              ELSE (COUNT(CASE WHEN ${tasks.status} = 'done' THEN 1 END) * 100 / COUNT(${tasks.id})) 
+            END
+          `.mapWith(Number),
+          memberCount: sql<number>`COUNT(DISTINCT ${tasks.assigneeId})`.mapWith(Number),
+        })
+        .from(projects)
+        .innerJoin(users, eq(projects.ownerId, users.id))
+        .innerJoin(organizations, eq(users.orgId, organizations.id))
+        .leftJoin(lists, eq(projects.id, lists.projectId))
+        .leftJoin(tasks, eq(lists.id, tasks.listId))
+        .where(eq(organizations.clerkOrgId, clerkOrgId))
+        .groupBy(projects.id)
+        .orderBy(desc(projects.createdAt));
+
+        return result;
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
       }
     },
 

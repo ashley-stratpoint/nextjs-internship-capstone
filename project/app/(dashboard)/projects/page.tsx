@@ -116,8 +116,12 @@ export default function ProjectsPage() {
 
 import { Plus, Search, Filter } from "lucide-react";
 import { ProjectCard } from "@/components/project-card";
+import { ProjectGrid } from "@/components/project-grid";
+import { queries } from "@/lib/db/index";
+import { auth } from "@clerk/nextjs/server";
+import { deleteProject } from "@/lib/actions/projects";
 
-const MOCK_PROJECTS = [
+/*const MOCK_PROJECTS = [
   {
     id: "1",
     name: "Project 1",
@@ -154,11 +158,23 @@ const MOCK_PROJECTS = [
     dueDate: new Date("2026-05-15"),
     status: "on-hold" as const,
   },
-];
+]; */
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const { orgId } = await auth();
+
+  if (!orgId) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] text-muted-foreground">
+        Please select an organization to view projects.
+      </div>
+    );
+  }
+
+  const dbProjects = await queries.projects.getAll(orgId);
+
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col min-h-[80vh] space-y-8">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -206,16 +222,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MOCK_PROJECTS.map((project) => (
-          <ProjectCard 
-            key={project.id} 
-            project={project}
-            onEdit={(id) => console.log("Edit project:", id)}
-            onDelete={(id) => console.log("Delete project:", id)}
-          />
-        ))}
-      </div>
+      <ProjectGrid initialProjects={dbProjects} />
     </div>
   );
 }

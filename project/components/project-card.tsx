@@ -34,13 +34,40 @@ Features to implement:
 - Error states
 */
 
+"use client";
+
 import { 
   MoreVertical, 
   Calendar, 
   Users, 
-  ExternalLink 
+  ExternalLink,
+  Pencil,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteProject } from "@/lib/actions/projects";
+import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { DeleteProjectModal } from "./modals/delete-project-modal";
 
 interface ProjectCardProps {
   project: {
@@ -53,18 +80,34 @@ interface ProjectCardProps {
     status: 'active' | 'completed' | 'on-hold';
   };
   onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
 }
 
 export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
+  const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const statusStyles = {
     active: "bg-primary/10 text-primary border-primary/20",
     completed: "bg-accent/50 text-accent-foreground border-accent/20",
     "on-hold": "bg-muted text-muted-foreground border-border",
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('a')) {
+      return;
+    }
+    router.push(`/projects/${project.id}`);
+  };
+
   return (
-    <div className="group relative bg-card text-card-foreground p-6 rounded-[var(--radius)] border border-border shadow-sm hover:shadow-md transition-all duration-200">
+    <div onClick={handleCardClick} className="group relative bg-card text-card-foreground p-6 rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200 cursor-pointer">
       
       {/* Title & Status Badge */}
       <div className="flex justify-between items-start mb-4">
@@ -78,10 +121,30 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             {project.status.replace('-', ' ')}
           </span>
         </div>
-        
-        <button className="p-1 rounded-md hover:bg-muted text-muted-foreground transition-colors">
-          <MoreVertical size={18} />
-        </button>
+
+        <div className="flex items-center gap-2">
+          {mounted ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                <MoreVertical size={18} />
+                <span className="sr-only">Open actions menu</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={() => router.push(`/projects/${project.id}/edit`)}>
+                Edit
+              </DropdownMenuItem>
+              <DeleteProjectModal 
+                projectId={project.id} 
+                projectName={project.name} 
+                onDelete={onDelete} 
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>) : (
+            <div className="h-8 w-8 rounded-md bg-muted/20 animate-pulse" />
+          )}
+        </div>
       </div>
 
       {/* Description */}
