@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 interface DeleteProjectModalProps {
   projectId: string;
@@ -30,9 +31,11 @@ export function DeleteProjectModal({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.preventDefault()
+    e.stopPropagation()
     
     try {
       setIsLoading(true);
@@ -42,6 +45,7 @@ export function DeleteProjectModal({
         title: "Success",
         description: `"${projectName}" has been deleted.`,
       });
+
       setIsOpen(false);
     } catch (error) {
       toast({

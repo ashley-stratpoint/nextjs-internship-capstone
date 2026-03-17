@@ -1,0 +1,12 @@
+Context: Project
+
+WRTE OPERATIONS (add / edit / delete)
+FORM (user input) --> UI Validation (zod schema) --> actions --> db query function
+FORM (user input) --> UI Validation (zod schema) --> hooks (userProjectCreate)  --> API (POST /projects/) --> actions --> db query function
+
+
+READ
+Component --> hooks (useProjectGetAll) --> API (GET /projects/) --> actions --> db query function
+
+current db ==?> POSTGRES
+future ==> MySQL

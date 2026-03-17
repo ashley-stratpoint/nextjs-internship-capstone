@@ -80,9 +80,10 @@ export const queries = {
   users: {
     getByClerkId: async (clerkId: string) => {
       return await db.query.users.findFirst({
-        where: eq(users.clerkId, clerkId),
+        where: (users, { eq }) => eq(users.clerkId, clerkId),
       });
     },
+
     create: async (data: typeof users.$inferInsert) => {
       const [newUser] = await db.insert(users).values(data).returning();
       return newUser;
@@ -97,23 +98,6 @@ export const queries = {
   },
 
   projects: {
-    /*getAll: async (orgId: string) => {
-      try {
-        const result = await db.query.projects.findMany({
-          where: eq(projects.ownerId, orgId),
-          orderBy: [desc(projects.createdAt)],
-        });
-
-        if(!result) {
-          throw new Error('No projects found');
-        }
-        return result;
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        throw new Error('Failed to fetch projects');
-      }
-    },*/
-
     getAll: async (clerkOrgId: string) => {
       try {
         const result = await db.select({

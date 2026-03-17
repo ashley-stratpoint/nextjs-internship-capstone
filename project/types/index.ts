@@ -1,58 +1,44 @@
 // TypeScript type definitions
 // Task 1.3: Set up project structure and folder organization
 
-export interface User {
-  id: string
-  clerkId: string
-  email: string
-  name: string
-  createdAt: Date
-  updatedAt: Date
+import { InferSelectModel } from "drizzle-orm";
+import * as schema from "@/lib/db/schema";
+
+export type Organization = InferSelectModel<typeof schema.organizations>;
+export type Category = InferSelectModel<typeof schema.categories>;
+
+export interface User extends Omit<InferSelectModel<typeof schema.users>, 'firstName' | 'lastName'> {
+  firstName: string;
+  lastName: string | null;
+  name: string;
+  projects?: Project[];
+  tasks?: Task[];
 }
 
-export interface Project {
-  id: string
-  name: string
-  description?: string
-  ownerId: string
-  createdAt: Date
-  updatedAt: Date
-  dueDate?: Date
-  lists: List[]
+export interface Project extends InferSelectModel<typeof schema.projects> {
+  lists?: List[];
+  owner?: User;
 }
 
-export interface List {
-  id: string
-  name: string
-  projectId: string
-  position: number
-  createdAt: Date
-  updatedAt: Date
-  tasks: Task[]
+export interface List extends InferSelectModel<typeof schema.lists> {
+  tasks?: Task[];
 }
 
-export interface Task {
-  id: string
-  title: string
-  description?: string
-  listId: string
-  assigneeId?: string
-  priority: "low" | "medium" | "high"
-  dueDate?: Date
-  position: number
-  createdAt: Date
-  updatedAt: Date
-  comments: Comment[]
+export interface Task extends InferSelectModel<typeof schema.tasks> {
+  comments?: Comment[];
+  categories?: Category[];
+  assignee?: User | null;
 }
 
-export interface Comment {
-  id: string
-  content: string
-  taskId: string
-  authorId: string
-  createdAt: Date
-  updatedAt: Date
+export interface Comment extends InferSelectModel<typeof schema.comments> {
+  author?: User;
 }
+
+export type TaskStatus = "todo" | "in_progress" | "review" | "done" | "backlog";
+export type Priority = "low" | "medium" | "high" | "urgent";
+export type ProjectStatus = "active" | "completed" | "on-hold";
+export type UserRole = "member" | "project_manager" | "admin";
+
 
 // Note for interns: These types should match your database schema
 // Update as needed when implementing the actual database schema

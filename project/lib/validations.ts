@@ -81,12 +81,13 @@ export const projectSchema = z.object({
     .max(100, 'Project name is too long (max 100 characters)'),
   description: z.string()
     .optional()
-    .or(z.literal('')),
-  status: z.enum(['active', 'completed', 'on-hold']).
-    default('active'),
+    .transform(val => val === "" ? undefined : val),
+  status: z.enum(['active', 'completed', 'on-hold'])
+    .default('active'),
   dueDate: z.coerce.date()
     .min(new Date(new Date().setHours(0, 0, 0, 0)), 'Invalid due date')
-    .optional(),
+    .optional()
+    .nullable(),
 })
 
 export const listSchema = z.object({
@@ -123,5 +124,6 @@ export const commentSchema = z.object({
     .min(1, 'Author reference is required'),
 })
 
-export type ProjectInput = z.infer<typeof projectSchema>
+export type ProjectFormInput = z.input<typeof projectSchema>;
+export type ProjectFormOutput = z.infer<typeof projectSchema>
 export type TaskInput = z.infer<typeof taskSchema>

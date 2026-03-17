@@ -120,6 +120,8 @@ import { ProjectGrid } from "@/components/project-grid";
 import { queries } from "@/lib/db/index";
 import { auth } from "@clerk/nextjs/server";
 import { deleteProject } from "@/lib/actions/projects";
+import { CreateProjectModal} from "@/components/modals/create-project-modal"
+
 
 /*const MOCK_PROJECTS = [
   {
@@ -160,7 +162,7 @@ import { deleteProject } from "@/lib/actions/projects";
   },
 ]; */
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({ initialProjects }: { initialProjects: any[] }) {
   const { orgId } = await auth();
 
   if (!orgId) {
@@ -183,10 +185,6 @@ export default async function ProjectsPage() {
             Manage and organize your team's architecture and task flows.
           </p>
         </div>
-        <button className="inline-flex items-center justify-center px-5 py-2.5 bg-primary text-primary-foreground rounded-[var(--radius)] hover:opacity-90 transition-opacity font-semibold shadow-sm">
-          <Plus size={20} className="mr-2" />
-          New Project
-        </button>
       </div>
 
       {/* Implementation Status Banner */}

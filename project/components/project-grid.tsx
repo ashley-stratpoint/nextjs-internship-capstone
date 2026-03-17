@@ -70,7 +70,8 @@ import { ProjectCard } from "./project-card"
 import { auth } from "@clerk/nextjs/server"
 import { resolveObjectURL } from "buffer"
 import { deleteProject } from "@/lib/actions/projects"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useOptimistic, useTransition } from "react"
+import { CreateProjectModal } from "@/components/modals/create-project-modal"
 
 interface Project {
   id: string;
@@ -82,17 +83,52 @@ interface Project {
   memberCount: number;
 }
 
-interface ProjectGridProps {
-  initialProjects: Project[];
-}
+export function ProjectGrid({ initialProjects }: { initialProjects: Project[] }) {
+  const [isPending, startTransition] = useTransition();
 
-export function ProjectGrid({ initialProjects }: ProjectGridProps) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, addOptimisticAction] = useOptimistic(
+    initialProjects,
+    (
+      state,
+      action:
+        | { type: "create"; payload: Project }
+        | { type: "delete"; payload: string }
+        | { type: "update"; payload: Project }
+    ) => {
+
+      switch (action.type) {
+
+        case "create":
+          return [action.payload, ...state]
+
+        case "delete":
+          return state.filter(p => p.id !== action.payload)
+
+        case "update":
+          return state.map(p =>
+            p.id === action.payload.id ? action.payload : p
+          )
+
+        default:
+          return state
+      }
+    }
+  )
 
   const handleDelete = async (id: string) => {
-    await deleteProject(id);
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-  };
+
+    startTransition(async () => {
+
+      addOptimisticAction({ type: "delete", payload: id })
+
+      try {
+        await deleteProject(id)
+      } catch (error) {
+        console.error("Delete failed", error)
+      }
+
+    })
+  }
 
   if (projects.length === 0) {
     return (
@@ -115,22 +151,25 @@ export function ProjectGrid({ initialProjects }: ProjectGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={{
-            id: project.id,
-            name: project.projectName,
-            description: project.description ?? undefined, 
-            dueDate: project.dueDate ?? undefined,
-            progress: Number(project.progress) || 0,
-            memberCount: Number(project.memberCount) || 0,
-            status: (project.status as 'active' | 'completed' | 'on-hold') || 'active',
-          }}
-          onDelete={handleDelete}
-        />
-      ))}
-    </div>
+    <>
+      <CreateProjectModal onOptimisticAdd={addOptimisticAction} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {projects.map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={{
+              id: project.id,
+              name: project.projectName,
+              description: project.description ?? undefined,
+              dueDate: project.dueDate ?? undefined,
+              progress: Number(project.progress) || 0,
+              memberCount: Number(project.memberCount) || 0,
+              status: project.status,
+            }}
+            onDelete={handleDelete}
+          />
+        ))}
+      </div>
+    </>
   )
 }
