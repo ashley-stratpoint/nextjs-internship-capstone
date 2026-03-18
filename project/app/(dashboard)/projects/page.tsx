@@ -117,9 +117,7 @@ export default function ProjectsPage() {
 import { Plus, Search, Filter } from "lucide-react";
 import { ProjectCard } from "@/components/project-card";
 import { ProjectGrid } from "@/components/project-grid";
-import { queries } from "@/lib/db/index";
 import { auth } from "@clerk/nextjs/server";
-import { deleteProject } from "@/lib/actions/projects";
 import { CreateProjectModal} from "@/components/modals/create-project-modal"
 
 
@@ -162,7 +160,7 @@ import { CreateProjectModal} from "@/components/modals/create-project-modal"
   },
 ]; */
 
-export default async function ProjectsPage({ initialProjects }: { initialProjects: any[] }) {
+export default async function ProjectsPage() {
   const { orgId } = await auth();
 
   if (!orgId) {
@@ -173,18 +171,18 @@ export default async function ProjectsPage({ initialProjects }: { initialProject
     );
   }
 
-  const dbProjects = await queries.projects.getAll(orgId);
-
   return (
     <div className="flex flex-col min-h-[80vh] space-y-8">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Projects</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage and organize your team's architecture and task flows.
           </p>
         </div>
+
+        <CreateProjectModal />
       </div>
 
       {/* Implementation Status Banner */}
@@ -220,7 +218,7 @@ export default async function ProjectsPage({ initialProjects }: { initialProject
       </div>
 
       {/* Projects Grid */}
-      <ProjectGrid initialProjects={dbProjects} />
+      <ProjectGrid />
     </div>
   );
 }

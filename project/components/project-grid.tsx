@@ -105,7 +105,6 @@ export function ProjectGrid() {
 
   return (
     <>
-      <CreateProjectModal />
       <UpdateProjectModal />
       <DeleteProjectModal />
 

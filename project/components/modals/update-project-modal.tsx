@@ -62,7 +62,7 @@ export function UpdateProjectModal() {
       <DialogContent className="sm:max-w-[425px] border-border bg-card">
         <DialogTrigger className="sm:max-w-[425px] border-border bg-card">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">
+            <DialogTitle className="text-2xl font-bold text-glow-primary">
               Edit Project
             </DialogTitle>
             <DialogDescription>

@@ -66,7 +66,7 @@ export async function updateProject(id: string, values: Partial<ProjectFormInput
             projectName: validatedFields.data.projectName,
             description: validatedFields.data.description,
             status: validatedFields.data.status,
-            dueDate: validatedFields.data.dueDate ? new Date(validatedFields.data.dueDate) : undefined,
+            dueDate: validatedFields.data.dueDate ? new Date(validatedFields.data.dueDate) : null,
             updatedAt: new Date(),
         })
     } catch (error) {

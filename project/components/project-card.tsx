@@ -117,6 +117,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     e.stopPropagation();
                     openUpdateProjectModal(project);
                   }}
+                  className="cursor-pointer"
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                     Edit
@@ -126,7 +127,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     e.stopPropagation();
                     openDeleteProjectModal(project);
                   }}
-                  className="text-destructive"
+                  className="text-destructive cursor-pointer"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                     Delete
@@ -166,18 +167,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <Users size={14} className="text-primary/70" />
             <span className="font-medium">{project.memberCount}</span>
           </div>
-
-          {project.dueDate && (
-            <div className="flex items-center gap-1.5">
-              <Calendar size={14} className="text-primary/70" />
-              <span className="font-medium">
-                {new Date (project.dueDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric"
-                })}
-              </span>
-            </div>
-          )}
+          
+          <div className="flex items-center gap-1.5">
+            <Calendar size={14} className="text-primary/70" />
+            <span className="font-medium">
+                {project.dueDate ? (
+                  new Date (project.dueDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                ) : (
+                  <span className="italic text-muted-foreground/70">No due date</span>
+                )}
+            </span>
+          </div>
         </div>
 
         <Link

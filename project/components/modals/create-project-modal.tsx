@@ -34,7 +34,7 @@ Integration:
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Plus } from "lucide-react";
+import { Calendar, Loader2, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -136,10 +136,10 @@ export function CreateProjectModal() {
                         <SelectValue placeholder="Select project status" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="on-hold">On Hold</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
+                    <SelectContent className="cursor-pointer">
+                      <SelectItem value="active" className="cursor-pointer">Active</SelectItem>
+                      <SelectItem value="on-hold" className="cursor-pointer">On Hold</SelectItem>
+                      <SelectItem value="completed" className="cursor-pointer">Completed</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -154,13 +154,16 @@ export function CreateProjectModal() {
                 <FormItem>
                   <FormLabel>Due Date</FormLabel>
                   <FormControl>
-                    <Input
-                      type="date"
-                      value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
-                      onChange={(e) =>
-                        field.onChange(e.target.value ? new Date(e.target.value) : null)
-                      }
-                    />
+                    <div className="relative group cursor-pointer">
+                      <Input
+                        type="date"
+                        className="cursor-pointer pl-3 block w-full bg-background border-input text-foreground focus:ring-primary focus:border-primary"
+                        value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? new Date(e.target.value) : null)
+                        }
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,13 +176,14 @@ export function CreateProjectModal() {
                 variant="ghost" 
                 onClick={closeCreateProjectModal}
                 disabled={isCreating}
+                className="cursor-pointer"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit" 
                 disabled={isCreating} 
-                className="min-w-[120px]"
+                className="min-w-[120px] cursor-pointer"
               >
                 {isCreating ? (
                   <>
