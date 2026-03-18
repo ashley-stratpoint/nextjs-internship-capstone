@@ -52,6 +52,7 @@ import { relations } from 'drizzle-orm/relations';
 export const roleEnum = pgEnum('role', ['member', 'project_manager', 'admin']);
 export const taskStatusEnum = pgEnum('task_status', ['todo', 'in_progress', 'review', 'done', 'backlog']);
 export const priorityEnum = pgEnum("task_priority", ["low", "medium", "high", "urgent"]);
+export const projectStatusEnum = pgEnum('project_status', ['active', 'completed', 'on-hold']);
 
 export const organizations = pgTable('organizations', {
    id: uuid('id').defaultRandom().primaryKey(),
@@ -80,7 +81,10 @@ export const projects = pgTable('projects', {
    id: uuid('id').defaultRandom().primaryKey(),
    projectName: text('project_name').notNull(),
    description: text('description'),
+   status: projectStatusEnum('status').notNull().default('active'),
+   orgId: text('org_id').notNull(),
    ownerId: uuid('owner_id').references(() => users.id, { onDelete: "cascade" }).notNull(),
+   progress: integer('progress').default(0),
    dueDate: timestamp('due_date'),
    createdAt: timestamp('created_at').defaultNow(),
    updatedAt: timestamp('updated_at').defaultNow(),

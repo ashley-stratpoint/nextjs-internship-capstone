@@ -4,7 +4,8 @@ import { Inter, JetBrains_Mono} from "next/font/google"
 import "./globals.css"
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider"
-import { dark } from "@clerk/themes"
+import { QueryProvider } from "@/components/providers/query-provider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -38,11 +39,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider
-      appearance={{ 
-        variables: {
-          colorPrimary: '#a855f7',
-        } ,
+    <QueryProvider>
+      <ClerkProvider
+        appearance={{ 
+          variables: {
+            colorPrimary: '#a855f7',
+          } ,
       }}
     >
     <html lang="en" suppressHydrationWarning>
@@ -54,9 +56,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
             {children}
+            <ReactQueryDevtools initialIsOpen={false} />
         </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>
-  )
+    </QueryProvider>
+  );
 }

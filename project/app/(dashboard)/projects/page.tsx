@@ -116,8 +116,12 @@ export default function ProjectsPage() {
 
 import { Plus, Search, Filter } from "lucide-react";
 import { ProjectCard } from "@/components/project-card";
+import { ProjectGrid } from "@/components/project-grid";
+import { auth } from "@clerk/nextjs/server";
+import { CreateProjectModal} from "@/components/modals/create-project-modal"
 
-const MOCK_PROJECTS = [
+
+/*const MOCK_PROJECTS = [
   {
     id: "1",
     name: "Project 1",
@@ -154,23 +158,31 @@ const MOCK_PROJECTS = [
     dueDate: new Date("2026-05-15"),
     status: "on-hold" as const,
   },
-];
+]; */
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const { orgId } = await auth();
+
+  if (!orgId) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] text-muted-foreground">
+        Please select an organization to view projects.
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col min-h-[80vh] space-y-8">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Projects</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage and organize your team's architecture and task flows.
           </p>
         </div>
-        <button className="inline-flex items-center justify-center px-5 py-2.5 bg-primary text-primary-foreground rounded-[var(--radius)] hover:opacity-90 transition-opacity font-semibold shadow-sm">
-          <Plus size={20} className="mr-2" />
-          New Project
-        </button>
+
+        <CreateProjectModal />
       </div>
 
       {/* Implementation Status Banner */}
@@ -206,16 +218,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MOCK_PROJECTS.map((project) => (
-          <ProjectCard 
-            key={project.id} 
-            project={project}
-            onEdit={(id) => console.log("Edit project:", id)}
-            onDelete={(id) => console.log("Delete project:", id)}
-          />
-        ))}
-      </div>
+      <ProjectGrid />
     </div>
   );
 }

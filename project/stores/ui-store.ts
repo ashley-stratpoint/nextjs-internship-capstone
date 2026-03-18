@@ -49,6 +49,7 @@ export const useUIStore = create<UIState>((set) => ({
 */
 
 // Placeholder to prevent import errors
+/*
 export const useUIStore = () => {
   console.log("TODO: Implement UI store with Zustand")
   return {
@@ -58,3 +59,107 @@ export const useUIStore = () => {
     closeCreateProjectModal: () => console.log("TODO: Close create project modal"),
   }
 }
+*/
+
+import { create } from "zustand";
+import { Project } from "@/types";
+
+interface UIState {
+  /* Project modal states */
+  // Create
+  isCreateProjectModalOpen: boolean;
+  openCreateProjectModal: () => void;
+  closeCreateProjectModal: () => void;
+  
+  // Update
+  isUpdateProjectModalOpen: boolean;
+  openUpdateProjectModal: (project: Project) => void;
+  closeUpdateProjectModal: () => void;
+
+  // Delete
+  isDeleteProjectModalOpen: boolean;
+  openDeleteProjectModal: (project: Project) => void;
+  closeDeleteProjectModal: () => void;
+
+  selectedProject: Project | null;
+
+  // Task modal states
+  isCreateTaskModalOpen: boolean;
+  openCreateTaskModal: () => void;
+  closeCreateTaskModal: () => void;
+
+  /* Toast States */
+  notification: {
+    message: string;
+    type: "success" | "error" | "info"| null;
+    isVisible: boolean;
+  };
+
+  showNotification: (message: string, type: "success" | "error" | "info") => void;
+  hideNotification: () => void;
+}
+
+export const useUIStore = create<UIState>((set) => ({
+  /* Project modal states */
+
+  // Create
+  isCreateProjectModalOpen: false,
+  openCreateProjectModal: () => set({ isCreateProjectModalOpen: true }),
+  closeCreateProjectModal: () => set({ isCreateProjectModalOpen: false }),
+
+  // Update
+  isUpdateProjectModalOpen: false,
+  openUpdateProjectModal: (project) =>
+    set({
+      isUpdateProjectModalOpen: true,
+      selectedProject: project,
+    }),
+
+  closeUpdateProjectModal: () =>
+    set({
+      isUpdateProjectModalOpen: false,
+      selectedProject: null,
+    }),
+
+  // Delete
+  isDeleteProjectModalOpen: false,
+  selectedProject: null,
+  
+  openDeleteProjectModal: (project) => set({
+    isDeleteProjectModalOpen: true,
+    selectedProject: project,
+  }),
+
+  closeDeleteProjectModal: () => set({
+    isDeleteProjectModalOpen: false,
+    selectedProject: null,
+  }),
+  
+  /* Task modal states */
+  isCreateTaskModalOpen: false,
+  openCreateTaskModal: () => set({ isCreateTaskModalOpen: true }),
+  closeCreateTaskModal: () => set({ isCreateTaskModalOpen: false }),
+
+  /* Toast States */
+  notification: {
+    message: "",
+    type: null,
+    isVisible: false
+  },
+
+  showNotification: (message: string, type: "success" | "error" | "info") => set({ 
+    notification: { 
+      message, 
+      type, 
+      isVisible: true 
+    }
+  }),
+
+  hideNotification: () => set({ 
+    notification: { 
+      message: "", 
+      type: null, 
+      isVisible: false 
+    } 
+  })
+}))
