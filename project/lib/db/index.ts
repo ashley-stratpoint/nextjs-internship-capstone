@@ -47,6 +47,7 @@ import ws from 'ws';
 import { sql, eq, and, asc, desc, exists } from 'drizzle-orm';
 import * as schema from './schema';
 import { organizations, users, projects, tasks, lists, comments } from './schema';
+import { Project } from '@/types';
 
 if (typeof window === 'undefined') {
   neonConfig.webSocketConstructor = ws;
@@ -98,7 +99,7 @@ export const queries = {
   },
 
   projects: {
-    getAll: async (clerkOrgId: string) => {
+    getAll: async (clerkOrgId: string): Promise<Project[]> => {
       try {
         const result = await db.select({
           id: projects.id,

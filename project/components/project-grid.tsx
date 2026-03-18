@@ -64,73 +64,26 @@
 
 "use client";
 
-import { Calendar, Users, MoreHorizontal, FolderOpen } from "lucide-react"
-import { queries } from "@/lib/db/index"
-import { ProjectCard } from "./project-card"
-import { auth } from "@clerk/nextjs/server"
-import { resolveObjectURL } from "buffer"
-import { deleteProject } from "@/lib/actions/projects"
-import { useState, useEffect, useOptimistic, useTransition } from "react"
-import { CreateProjectModal } from "@/components/modals/create-project-modal"
+import { Calendar, Users, MoreHorizontal, FolderOpen } from "lucide-react";
+import { ProjectCard } from "./project-card";
+import { CreateProjectModal } from "@/components/modals/create-project-modal";
+import { UpdateProjectModal } from "@/components/modals/update-project-modal";
+import { DeleteProjectModal } from "@/components/modals/delete-project-modal";
+import { useProjects } from "@/hooks/use-projects";
+import { Project } from "@/types";
 
-interface Project {
-  id: string;
-  projectName: string;
-  description: string | null;
-  dueDate: Date | null;
-  status: "active" | "completed" | "on-hold";
-  progress: number;
-  memberCount: number;
-}
+export function ProjectGrid() {
+  const { projects, isLoading } = useProjects();
 
-export function ProjectGrid({ initialProjects }: { initialProjects: Project[] }) {
-  const [isPending, startTransition] = useTransition();
-
-  const [projects, addOptimisticAction] = useOptimistic(
-    initialProjects,
-    (
-      state,
-      action:
-        | { type: "create"; payload: Project }
-        | { type: "delete"; payload: string }
-        | { type: "update"; payload: Project }
-    ) => {
-
-      switch (action.type) {
-
-        case "create":
-          return [action.payload, ...state]
-
-        case "delete":
-          return state.filter(p => p.id !== action.payload)
-
-        case "update":
-          return state.map(p =>
-            p.id === action.payload.id ? action.payload : p
-          )
-
-        default:
-          return state
-      }
-    }
-  )
-
-  const handleDelete = async (id: string) => {
-
-    startTransition(async () => {
-
-      addOptimisticAction({ type: "delete", payload: id })
-
-      try {
-        await deleteProject(id)
-      } catch (error) {
-        console.error("Delete failed", error)
-      }
-
-    })
+  if (isLoading) {
+    return (
+      <div className="py-20 text-center text-muted-foreground">
+        Loading projects...
+      </div>
+    );
   }
 
-  if (projects.length === 0) {
+  if (!projects || projects.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center w-full py-20 lg:py-32">
         <div className="relative mb-2">
@@ -152,21 +105,23 @@ export function ProjectGrid({ initialProjects }: { initialProjects: Project[] })
 
   return (
     <>
-      <CreateProjectModal onOptimisticAdd={addOptimisticAction} />
+      <CreateProjectModal />
+      <UpdateProjectModal />
+      <DeleteProjectModal />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {projects.map((project) => (
+        {projects.map((project: Project) => (
           <ProjectCard
             key={project.id}
             project={{
               id: project.id,
-              name: project.projectName,
-              description: project.description ?? undefined,
-              dueDate: project.dueDate ?? undefined,
+              projectName: project.projectName,
+              description: project.description ?? null,
+              dueDate: project.dueDate ? new Date(project.dueDate) : null,
+              status: project.status,
               progress: Number(project.progress) || 0,
               memberCount: Number(project.memberCount) || 0,
-              status: project.status,
             }}
-            onDelete={handleDelete}
           />
         ))}
       </div>

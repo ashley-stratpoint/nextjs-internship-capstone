@@ -32,30 +32,22 @@ Integration:
 
 "use client";
 
-import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { projectSchema, ProjectFormInput, ProjectFormOutput } from "@/lib/validations";
-import { createProject } from "@/lib/actions/projects";
-import { useToast } from "@/hooks/use-toast";
-import { z } from 'zod'
+import { projectSchema, ProjectFormInput } from "@/lib/validations";
+import { useProjects } from "@/hooks/use-projects";
+import { useUIStore } from "@/stores/ui-store";
 
-interface CreateProjectModalProps {
-  onOptimisticAdd: (action: { type: 'create' | 'delete', payload: any }) => void;
-}
-
-export function CreateProjectModal({ onOptimisticAdd }: CreateProjectModalProps) {
-  const [open, setOpen]= useState(false)
-  const { toast } = useToast()
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition();
+export function CreateProjectModal() {
+  const { isCreateProjectModalOpen, openCreateProjectModal, closeCreateProjectModal } = useUIStore();
+  const { createProject, isCreating } = useProjects();
 
   const form = useForm<ProjectFormInput>({
     resolver: zodResolver(projectSchema),
@@ -67,47 +59,20 @@ export function CreateProjectModal({ onOptimisticAdd }: CreateProjectModalProps)
     },
   })
 
-  const isLoading = form.formState.isSubmitting
-
   async function onSubmit(data: ProjectFormInput) {
-    const tempId = crypto.randomUUID()
-
-    const optimisticProject = {
-      id: tempId,
-      projectName: data.projectName,
-      description: data.description || "",
-      status: "active",
-      progress: 0,
-      memberCount: 0,
-      dueDate: data.dueDate,
-    };
-
-    startTransition(async () => {
-        onOptimisticAdd({ type: 'create', payload: optimisticProject });
-        
-        setOpen(false);
-        form.reset();
-
-        try {
-          await createProject(data);
-          toast({
-            title: "Project Created!",
-            description: "Your new workspace is ready.",
-          });
-      } catch (error: any) {
-        toast({ 
-          variant: "destructive", 
-          title: "Project Creation Failed", 
-          description: error.message || "Something went wrong." 
-        });
-      }
-    });
+    try {
+      await createProject(data);
+      closeCreateProjectModal();
+      form.reset();
+    } catch (error) {
+      console.error("Submission failed", error);
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isCreateProjectModalOpen} onOpenChange={(open) => !open && closeCreateProjectModal()}>
       <DialogTrigger asChild>
-        <Button className="bg-primary text-primary-foreground shadow-lg hover:shadow-primary/20">
+        <Button onClick={openCreateProjectModal} className="bg-primary text-primary-foreground shadow-lg hover:shadow-primary/20">
           <Plus className="mr-2 h-4 w-4" /> New Project
         </Button>
       </DialogTrigger>
@@ -156,20 +121,70 @@ export function CreateProjectModal({ onOptimisticAdd }: CreateProjectModalProps)
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select project status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="on-hold">On Hold</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? new Date(e.target.value) : null)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <DialogFooter className="pt-4">
               <Button 
                 type="button" 
                 variant="ghost" 
-                onClick={() => setOpen(false)}
-                disabled={isLoading}
+                onClick={closeCreateProjectModal}
+                disabled={isCreating}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading} className="min-w-[120px]">
-                {isLoading ? (
+              <Button 
+                type="submit" 
+                disabled={isCreating} 
+                className="min-w-[120px]"
+              >
+                {isCreating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Launching...
+                    Creating...
                   </>
                 ) : (
                   "Create Project"

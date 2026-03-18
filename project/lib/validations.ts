@@ -84,10 +84,9 @@ export const projectSchema = z.object({
     .transform(val => val === "" ? undefined : val),
   status: z.enum(['active', 'completed', 'on-hold'])
     .default('active'),
-  dueDate: z.coerce.date()
-    .min(new Date(new Date().setHours(0, 0, 0, 0)), 'Invalid due date')
-    .optional()
-    .nullable(),
+  dueDate: z.date()
+    .nullable()
+    .optional(),
 })
 
 export const listSchema = z.object({

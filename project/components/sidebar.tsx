@@ -107,7 +107,6 @@ export function Sidebar() {
           <ThemeToggle />
           <div className="flex items-center p-0.5 rounded-full border border-primary/10 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
               <UserButton 
-                fallbackRedirectUrl="/dashboard" 
                 appearance={{ 
                   baseTheme: isDark ? dark : undefined,
                   elements: { 

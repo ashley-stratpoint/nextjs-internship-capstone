@@ -15,10 +15,24 @@ export interface User extends Omit<InferSelectModel<typeof schema.users>, 'first
   tasks?: Task[];
 }
 
+/*
 export interface Project extends InferSelectModel<typeof schema.projects> {
+  memberCount: Number;
   lists?: List[];
   owner?: User;
 }
+*/
+
+export type Project = {
+  id: string;
+  projectName: string;
+  description: string | null;
+  dueDate: Date | null;
+  status: ProjectStatus;
+  progress: number;
+  memberCount: number;
+}
+
 
 export interface List extends InferSelectModel<typeof schema.lists> {
   tasks?: Task[];
